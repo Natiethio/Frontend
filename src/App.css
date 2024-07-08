@@ -1,0 +1,42 @@
+/* #root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+} */
+.navbar-wrapper a{
+  padding-top:10px;
+  padding-left: 30px;
+  text-decoration: none;
+  color: white;
+}
+.navbar-wrapper2{
+  padding-left: 30px;
+  color: white;
+}
+.navbar-wrapper2 :hover{
+  color: white;
+}
+.navbar-wrapper a:hover{
+  color: rgb(224, 104, 6);
+}
+.App{
+  text-align: center;
+}
+.image-container {
+  height: 100px; /* Set the desired height for the images */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image-container img {
+  max-height: 100%; /* Ensure the image fits within the container's height */
+  max-width: 100%; /* Maintain aspect ratio */
+}
+
+
+
+
+

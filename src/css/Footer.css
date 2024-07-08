@@ -1,0 +1,117 @@
+
+.footer{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    line-height: 1.5;
+    background-color:black;
+    display: flex;
+    box-shadow: var(--shadow);
+    padding:70px 0;
+    line-height: 1.5;
+}
+.container{
+    max-width:1170px;
+    height:215px;
+    line-height: 1.5;
+    margin: auto;
+    
+}
+.row2{
+    display:flex;
+    flex-wrap: wrap;
+}
+ul{
+list-style-type:none;
+}
+
+.footer-col{
+  width:23%;
+  padding:0 15px;
+}
+.footer-col>h4{
+    color:white;
+    text-transform: capitalize;
+    position: relative;
+   
+}
+.footer-col .h4te>h4{
+    color:white;
+    text-transform: capitalize;
+    position: relative;
+    padding-left:30px;
+}
+.footer-col .h4te>h4::before{
+ content:'';
+ position: absolute;
+ left:10;
+ bottom:-10px;
+ background-color:rgb(250, 98, 123);
+ height:2px;
+ box-sizing: border-box;
+ width:50px;
+}
+.footer-col>h4::before{
+    content:'';
+    position: absolute;
+    left:0;
+    bottom:-10px;
+    background-color:rgb(250, 98, 123);
+    height:2px;
+    box-sizing: border-box;
+    width:50px;
+   }
+.footer-col>ul li{
+    padding-top:16px; 
+    padding-left: px;
+    color:antiquewhite;
+}
+.footer-col>ul li{
+    padding-top:16px; 
+    padding-left: px;
+    color:antiquewhite;
+}
+.footer-col .h4te>ul li a{
+    text-decoration: none;
+    color:antiquewhite;
+    display: flex-start;
+
+   transition:all 0.3s ease;
+}
+.footer-col  ul li a:hover{
+    text-decoration: none;
+   color:#ffffff;
+   padding-left: 10px;
+ }
+ .footer-col .social-medialinks{
+    padding-top:16px; 
+ }
+.footer-col .social-medialinks a{
+    display: inline-block;
+    height:40px;
+    width:40px;
+    background-color: rgba(255,255,255,0.2);
+    margin-right:10px;
+    text-align:center;
+    line-height:40px;
+    border-radius:50%;
+    color:#ffffff;
+    transition: all 0.5s ease;
+}
+.footer-col .social-medialinks a:hover{
+    color:#24262b;
+    background-color: #ffffff;
+}
+@media(max-width:767px){
+   .footer-col{
+    width: 50%;
+    margin-bottom:30px;
+    height:100%;
+   } 
+}
+@media(max-width:574px){
+    .footer-col{
+     width: 100%;
+     height:100%;
+    } 
+ }

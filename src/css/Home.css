@@ -1,0 +1,28 @@
+.image-container {
+    height: 10px; /* Set the desired height for the images */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .image-container img {
+    max-height: 100%; /* Ensure the image fits within the container's height */
+    max-width: 100%; /* Maintain aspect ratio */
+  }
+  .delbtn{
+    background-color: #a90b0b;
+    color:#fff;
+    padding:5px;
+    border-radius:5px;
+    cursor: pointer;
+  }
+  .delbtn:hover{
+    border:1px solid#a90b0b;
+    color:#a90b0b;
+    background-color:#fff
+  }
+  .image-update{
+    max-height: 100%;
+    max-width: 100%;
+  }
