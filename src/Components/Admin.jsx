@@ -10,7 +10,7 @@ import axios from 'axios';
 import '../css/Home.css';
 import '../css/ReactToastify.css';
 import api from '../api/Api'
-function Home() {
+function Admin() {
 
    const [products, setProducts] = useState([]);
    const [searchdata, setSearchdata] = useState('');
@@ -23,33 +23,39 @@ function Home() {
       {
          navigate("/Login");
       }
-      setPagetitle('Home')
-      // fetchProducts();
+      setPagetitle('Admin')
+      fetchProducts();
    }, []);
 
+   const getConfig = async () => {
+      const response = await fetch('/config.json');
+      const config = await response.json();
+      return config;
+    };
+  
 
-   // async function fetchProducts() {
-   //    try {
-   //       const token = JSON.parse(localStorage.getItem('access_token'));
-
-   //       const response = await fetch("http://localhost:8000/api/Productlist", {
-   //          headers: {
-   //             'Authorization': `Bearer ${token}`,
-   //          },
-   //       });
-   //       if (response.ok) {
-   //          const data = await response.json();// used to retrive the JSON data from the response body
-   //          setProducts(data);
-   //       } else {
-   //          console.error("Error fetching products:", response.status);
-   //       }
-   //    } catch (error) {
-   //       console.error("Error fetching products:", error);
-   //    }
-   //    finally {
-   //       setLoading(false);
-   //    }
-   // }
+   async function fetchProducts() {
+      try {
+         const token = JSON.parse(localStorage.getItem('access_token'));
+         const config = await getConfig();
+         const response = await fetch(`${config.API_BASE_URL}/Productlist`, {
+            headers: {
+               'Authorization': `Bearer ${token}`,
+            },
+         });
+         if (response.ok) {
+            const data = await response.json();// used to retrive the JSON data from the response body
+            setProducts(data);
+         } else {
+            console.error("Error fetching products:", response.status);
+         }
+      } catch (error) {
+         console.error("Error fetching products:", error);
+      }
+      finally {
+         setLoading(false);
+      }
+   }
 
    // async function deleteproduct(id) {
    //    document.getElementById('delbtn').disabled=true
@@ -83,8 +89,9 @@ function Home() {
             // User confirmed the deletion
             
             try {
+               const config = await getConfig();
                const token = JSON.parse(localStorage.getItem('access_token'));
-               const response = await axios.delete(`http://localhost:8000/api/Delete/${id}`, {
+               const response = await axios.delete(`${config.API_BASE_URL}/Delete/${id}`, {
                   headers: {
                      'Authorization': `Bearer ${token}`,
                   },
@@ -103,7 +110,7 @@ function Home() {
                      text: "violation  has been deleted.",
                      icon: "success",
                   }).then(() => {
-                     // fetchProducts();
+                     fetchProducts();
                   });
                }
                else {
@@ -145,10 +152,15 @@ function Home() {
          }
          try {
             const token = JSON.parse(localStorage.getItem('access_token'));
-
-            // let response = await axios.post(`http://localhost:8000/api/Search/${searchdata}`)
-            // console.log(searchdata)
-            const result = await api.get(`http://localhost:8000/api/Search/${searchdata}`)
+           
+             const config = await getConfig();
+           
+            // let response = await axios.post(`${config.API_BASE_URL}/Search/${searchdata}`)
+            const response = await axios.get(`${config.API_BASE_URL}/Search/${searchdata}`, {
+               headers: {
+                  'Authorization': `Bearer ${token}`,
+               },
+            })
             .then(response => {
                if(response){
                   setProducts(response.data.result);
@@ -248,13 +260,13 @@ function Home() {
 
                            products.map((product) => (//it is like @foreach($products as $product)
                               <tr key={product.id}> {/* Add key prop to the parent element */}
-                                 <td><h6>{product.name}</h6></td>
+                                 <td><h6>{product.violation_type}</h6></td>
                                  <td><p>{product.description}</p></td>
-                                 <td><p>{product.price} <span className="text-warning">AA</span></p></td>
+                                 <td><p>{product.License_plate} <span className="text-warning">AA</span></p></td>
                                  <td>
                                     <div className="image-container">
-                                       <img src={`http://localhost:8000/products/${product.image}`}
-                                          alt={product.name} /> {/* fetch the image which is named product.image from products folder  */}
+                                       <img src={`http://192.168.0.8:8000/products/${product.image}`}
+                                           alt={product.name} /> 
                                     </div>
                                  </td>
                                  <td className="d-flex gap-2">
@@ -270,11 +282,10 @@ function Home() {
                             )
                            ))
                      }
-                  </tbody>
-               </Table>
+                  </tbody>               </Table>
             </Container>
          </div>
       </>
    );
 }
-export default Home
+export default Admin

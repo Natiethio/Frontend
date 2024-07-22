@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import swal from "sweetalert";
 
-
 function AddProduct() {
 
   useEffect(() => {
@@ -14,78 +13,71 @@ function AddProduct() {
     {
       navigate("/Login");
     }
- 
   }, [])
 
-  // const [name, setName] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  // const [image, setImage] = useState("");
+  const [image, setImage] = useState("");
   const [pagename, setPagename] = useState("");
   const [error, setError] = useState([]);
   const [localstorage,setLocalstorage] = useState("");
   const navigate = useNavigate();
  
 
- const getConfig = async () => {
-    const response = await fetch('/config.json');
-    const config = await response.json();
-    return config;
-  };
+
   async function AddItem() {
     
   // if (localStorage.getItem('user-info')){
 
     try {
-      console.warn(description, price)
+      console.warn(name, description, price, image)
       const formData = new FormData();
-      // formData.append('name', name);
+      formData.append('name', name);
       formData.append('description', description);
-      formData.append('License_plate', price);
-      // formData.append('image', image);
+      formData.append('price', price);
+      formData.append('image', image);
 
       document.getElementById('addbtn').disabled = true
-      document.getElementById('addbtn').innerHTML = 'Reporting..'
+      document.getElementById('addbtn').innerHTML = 'Adding..'
 
       const token = JSON.parse(localStorage.getItem('access_token'));
 
-      const config = await getConfig();
-  
-      const response = await axios.post(`${config.API_BASE_URL}/AddFlagged`, formData,{
+      const response = await axios.post('http://localhost:8000/api/AddProduct', formData,{
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-     });
-      console.warn(response.data)
+});
+
       if (response.data.status === 200) {
         // alert('Product added successfully!')
         swal({
           title: "Success",
-          text: "Issue Reported Successfully!",
+          text: "violation  added successfully!",
           icon: "success",
           button: "OK",
         });
         // window.location.reload();refresh the entire page
-        // setName('')
+        setName('')
         setDescription('')
         setPrice('')
-        // setImage('')
+        setImage('')
         setError('')
-        // document.getElementById('myimage').value = '';//set the html element input to null
+        document.getElementById('myimage').value = '';//set the html element input to null
       }
       else if(response.data.status === 500){
         swal({
           title: "Failed",
-          text: "Failed to add the item else!",
+          text: "Failed to add the item!",
           icon: "error",
           button: "OK",
         });
         // window.location.reload();refresh the entire page
-        // setName('')
+        setName('')
         setDescription('')
         setPrice('')
-        // setImage('')
-        // setError('')
+        setImage('')
+        setError('')
         document.getElementById('myimage').value = '';
       }
       else {
@@ -96,10 +88,9 @@ function AddProduct() {
     }
     catch (error) {
       // alert('catch Error while adding the data!!')
-      console.error(error)
       swal({
         title: "Failed",
-        text: "Failed to add the item catch!!",
+        text: "Failed to add the item!!",
         icon: "error",
         buttons: {
           confirm: {
@@ -115,7 +106,7 @@ function AddProduct() {
       });
     }
     document.getElementById('addbtn').disabled = false
-    document.getElementById('addbtn').innerHTML = 'Report'
+    document.getElementById('addbtn').innerHTML = 'Add Product'
   // else{
   //   navigate("/Login");
   //  }
@@ -130,28 +121,11 @@ function AddProduct() {
       <Header />
 
       <div className="col-sm-5 offset-sm-4 border mt-5 shadow">
-        <h1>Report Your Issue</h1>
+        <h1>Add vilations</h1>
         <hr></hr>
         <div className=' col-sm-6 offset-sm-3'>
 
-        <input
-            type="text"
-            value={price}
-            name="price"
-            onChange={(e) => {
-              setPrice(e.target.value)
-
-            }}
-            min="1"
-            className="form-control"
-            placeholder="Enter license plate"
-            required />
-            {error.License_plate && (
-            <div className="text-danger">{error.License_plate}</div>
-          )}
-          <br />
-
-          {/* <input
+          <input
             type="text"
             value={name}
             name="name"
@@ -162,12 +136,10 @@ function AddProduct() {
 
             className="form-control"
             placeholder="Enter violation type"
-            required /> */}
-          {/* {error.name && (
+            required />
+          {error.name && (
             <div className="text-danger">{error.name}</div>
-          )} */}
-          
-          {/* Display if any validaton error occurd */}
+          )}{/* Display if any validaton error occurd */}
           <br />
 
           <input
@@ -185,7 +157,42 @@ function AddProduct() {
             <div className="text-danger">{error.description}</div>
           )}
           <br />
-          <button id="addbtn" onClick={AddItem} className="btn btn-success mb-3">Report</button>
+         
+          <input
+            type="text"
+            value={price}
+            name="price"
+            onChange={(e) => {
+              setPrice(e.target.value)
+
+            }}
+            min="1"
+            className="form-control"
+            placeholder="Enter license plate"
+            required />
+            {error.price && (
+            <div className="text-danger">{error.price}</div>
+          )}
+          <br />
+          
+          <input
+            id="myimage"
+            type="file"
+
+            name="image"
+            onChange={(e) => {
+              setImage(e.target.files[0])
+            }}
+            min="1"
+            className="form-control"
+            placeholder="violatated Image"
+            required />
+             {error.image && (
+            <div className="text-danger text-left">{error.image}</div>
+          )}
+          <br />
+         
+          <button id="addbtn" onClick={AddItem} className="btn btn-success mb-3">Add violation/tracceds</button>
         </div>
       </div>
     </>

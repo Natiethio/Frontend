@@ -9,10 +9,9 @@ import { Helmet } from 'react-helmet';
 import '../css/Home.css';
 
 
-function UpdateProduct() {
+function UpdateProductflagged() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -44,23 +43,18 @@ function UpdateProduct() {
 
     try {
       const token = JSON.parse(localStorage.getItem('access_token'));
-      //const response = await fetch(`http://127.0.0.1:8000/api/GetProduct/${id}`);
       const config = await getConfig();
-      const response = await axios.get(`${config.API_BASE_URL}/GetProduct/${id}`, {
-         headers: {
-            'Authorization': `Bearer ${token}`,
-         },
+      //const response = await fetch(`http://127.0.0.1:8000/api/GetProduct/${id}`);
+      const response = await axios.get(`${config.API_BASE_URL}/GetFlagged/${id}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
       });
-      // const response = await axios.get(`http://127.0.0.1:8000/api/GetProduct/${id}`,{
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //   }
-      // });
       const result = response.data;
-      setProduct(result.product);
-      setName(result.product.violation_type);
+      setProduct(result);
+      setName(result.product.flagged_by);
       setDescription(result.product.description);
-      setPrice(result.product.License_plate);
+      setPrice(result.product.license_plate);
       console.log(result);
     } catch (error) {
       console.error(error);
@@ -74,9 +68,9 @@ function UpdateProduct() {
     // if (localStorage.getItem('access_token')){
 
     if (
-      name === product.violation_type &&
-      description === product.description &&
-      price === product.License_plate &&
+      name === product.product.flagged_by &&
+      description === product.product.description &&
+      price === product.product.license_plate &&
       !image
     ) {
       setError('')
@@ -104,10 +98,10 @@ function UpdateProduct() {
       document.getElementById('updbtn').innerHTML = 'Updating..'
 
       const formData = new FormData();
-      formData.append("violation_type", name);
+      formData.append("flagged_by", name);
+      formData.append("license_plate", price);
       formData.append("description", description);
-      formData.append("License_plate", price);
-      formData.append("image", image);
+      // formData.append("image", image);
       console.warn(formData)
 
       //Using Fetch API
@@ -118,16 +112,13 @@ function UpdateProduct() {
       // });
       const token = JSON.parse(localStorage.getItem('access_token'));
       const config = await getConfig();
-      const response = await axios.post(`${config.API_BASE_URL}/UpdateProduct/${id}`, formData, {
-      headers: {
-      'Authorization': `Bearer ${token}`,
-      },
-    })
-      // const response = await axios.post(`http://127.0.0.1:8000/api/UpdateProduct/${id}`, formData,{
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,//sending the token with Bearer header to autorize the request if the token doesnt match it will be un autorized
-      //   },
-      // })
+      //const response = await fetch(`http://127.0.0.1:8000/api/GetProduct/${id}`);
+
+      const response = await axios.post(`${config.API_BASE_URL}/UpdateFlagged/${id}`, formData,{
+        headers: {
+          'Authorization': `Bearer ${token}`,//sending the token with Bearer header to autorize the request if the token doesnt match it will be un autorized
+        },
+      })
       if (response.data.status === 200) {
         const result = response.data
         console.log(result);
@@ -136,7 +127,7 @@ function UpdateProduct() {
         // alert("Product Updated Successfully!!");
         swal({
           title: "Success",
-          text: "Violation Updated Successfully!!",
+          text: "Updated Successfully!!",
           icon: "success",
           buttons: {
             confirm: {
@@ -193,7 +184,7 @@ function UpdateProduct() {
       </Helmet>
       <Header />
       <div className="col-sm-5 offset-sm-4 border mt-5 shadow">
-        <h1>Update violation </h1>
+        <h1>Update Flagged</h1>
         <hr></hr>
 
         {
@@ -216,8 +207,24 @@ function UpdateProduct() {
                 required
                 onChange={(e) => setName(e.target.value)}
               />
-              {error.violation_type && (
-                <div className="text-danger">{error.violation_type}</div>
+              {error.flagged_by && (
+                <div className="text-danger">{error.flagged_by}</div>
+              )}
+              <br />
+
+              
+              <input
+                type="text"
+                value={price}
+                name="price"
+                min="1"
+                className="form-control"
+                placeholder="Enter violatated car licence plate"
+                required
+                onChange={(e) => setPrice(e.target.value)}
+              />
+              {error.license_plate && (
+                <div className="text-danger">{error.license_plate}</div>
               )}
               <br />
 
@@ -235,20 +242,6 @@ function UpdateProduct() {
               )}
               <br />
 
-              <input
-                type="text"
-                value={price}
-                name="price"
-                min="1"
-                className="form-control"
-                placeholder="Enter violatated car licence plate"
-                required
-                onChange={(e) => setPrice(e.target.value)}
-              />
-              {error.License_plate && (
-                <div className="text-danger">{error.License_plate}</div>
-              )}
-              <br />
 
               {/* <input
                 type="file"
@@ -264,8 +257,6 @@ function UpdateProduct() {
               <br/> */}
 
               {/* <img className="image-update" src={`http://localhost:8000/products/${product.image}`} alt={product.violation_type} /><br /><br /> */}
-              <img className="image-update" src={`http://192.168.0.8:8000/products/${product.image}`}
-                                           alt={product.violation_type} /> <br /><br />
               <button id="updbtn" onClick={handleUpdate} className="btn btn-success mb-3">Update</button>
             </div>
           ))
@@ -275,4 +266,4 @@ function UpdateProduct() {
   );
 }
 
-export default UpdateProduct;
+export default UpdateProductflagged;

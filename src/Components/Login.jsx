@@ -3,139 +3,145 @@ import Header from "./Header";
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
-// import axios from '../api/axios';
-function Login() {
-  const [pagetitle,setPagetitle]=useState('')
-   useEffect(() => {
-    setPagetitle('Login')
-    if (localStorage.getItem('access_token'))//user is logged in so when user try to navigate using a get url typing it redirect it to the /Add url or add page
-    {
-      navigate("/");
-    }
-  }, [])
 
+function Login() {
+  const [pagetitle, setPagetitle] = useState('');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [role, setRole] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setPagetitle('Login');
+    if (localStorage.getItem('access_token')) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   const clearErrorMessage = () => {
-    setErrorMessage(""); // Clear the error message
+    setErrorMessage("");
   };
-  
+
+  const getConfig = async () => {
+    const response = await fetch('/config.json');
+    const config = await response.json();
+    return config;
+  };
+
   async function signIn() {
-    document.getElementById('signbtn').disabled=true
-    document.getElementById('signbtn').innerHTML='Signing In...'
-    
- 
+    document.getElementById('signbtn').disabled = true;
+    document.getElementById('signbtn').innerHTML = 'Signing In...';
+
     try {
-      if(email === '' || password === ''){
-        setErrorMessage("Please fill the required inputs")
-        document.getElementById('signbtn').disabled=false
-        document.getElementById('signbtn').innerHTML='Sign In'
+      if (email === '' || password === '') {
+        setErrorMessage("Please fill the required inputs");
+        document.getElementById('signbtn').disabled = false;
+        document.getElementById('signbtn').innerHTML = 'Sign In';
         return;
       }
 
       let item = { email, password };
       console.warn(item);
-      
-      //Using Axios
-       const result = await axios.post("http://localhost:8000/api/Login", item);
+      // const ipAddress = '192.168.1.10'; // Replace with your server's IP address
+      const config = await getConfig();
+      const result = await axios.post(`${config.API_BASE_URL}/Login`,item);
+      // const result = await axios.post(`http://localhost:8000/api/Login`, item);
 
-        if(result.data.status === 200){
-            const respones = result.data
-            console.warn('result', respones);
-            localStorage.setItem('access_token', JSON.stringify(result.data.token));
-            // localStorage.setItem("user-info", JSON.stringify(result.data.userlogin));
-            // navigate("/");
-            handleSubsequentRequests();
+      if (result.data.status === 200) {
+        const response = result.data;
+        console.log(response.role);
+        console.warn('result', response);
+
+        localStorage.setItem('access_token', JSON.stringify(response.token));
+        handleSubsequentRequests(response.token);
+      } else {
+        document.getElementById('signbtn').disabled = false;
+        document.getElementById('signbtn').innerHTML = 'Sign In';
+        const errorResponse = result.data;
+        const errorMessage = errorResponse.error || "An error occurred.";
+        console.error(errorMessage);
+        setErrorMessage(errorMessage);
       }
-   
-    else {
-      // Handle incorrect credentials
-      // const errorResponse =await result.json();for fetch API
-      document.getElementById('signbtn').disabled=false
-      document.getElementById('signbtn').innerHTML='Sign In'
-      const errorResponse = result.data
-      const errorMessage = errorResponse.error || "An error occurred.";
-      console.error(errorMessage);
-      setErrorMessage(errorMessage);
-    } 
-    
-  } catch (error) {
-      document.getElementById('signbtn').disabled=false
-      document.getElementById('signbtn').innerHTML='Sign In'
+
+    } catch (error) {
+      document.getElementById('signbtn').disabled = false;
+      document.getElementById('signbtn').innerHTML = 'Sign In';
       console.error("An error occurred:", error);
-      const errorMessage = "An catch error occurred. Please try again.";
-      setErrorMessage(errorMessage); // Set the error message in state
-   }
-  //  document.getElementById('signbtn').disabled=false
-  //  document.getElementById('signbtn').innerHTML='Sign In'
- }
- async function handleSubsequentRequests() {
-  //sub sequent request to Autorize the autenticated user
-  const token = JSON.parse(localStorage.getItem('access_token'));
+      const errorMessage = "An error occurred. Please try again.";
+      setErrorMessage(errorMessage);
+    }
+  }
 
-  await axios.get('http://localhost:8000/api/getUserData', {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  })
-    .then(response => {
-     localStorage.setItem("user-info", JSON.stringify(response.data.userlogin));
-    })
-    .catch(error => {
-     console.error('Subsequent request error')
-    });
-    document.getElementById('signbtn').disabled=true
-    document.getElementById('signbtn').innerHTML='Signing In...'
+  async function handleSubsequentRequests(token) {
+    try {
+      const config = await getConfig();
+      // const result = await axios.post(`${config.API_BASE_URL}/Login`,item);
+      const response = await axios.get(`${config.API_BASE_URL}/getUserData`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-  // Redirect to the desired page if needed
-  navigate("/");
-};
+      const userLogin = response.data.userlogin;
+      setRole(userLogin.role);
+      localStorage.setItem("user-info", JSON.stringify(userLogin));
+
+      if (userLogin.role === 1) {
+        navigate("/Admin");
+      } else {
+        navigate("/Add");
+      }
+    } catch (error) {
+      console.error('Subsequent request error:', error);
+    } finally {
+      document.getElementById('signbtn').disabled = false;
+      document.getElementById('signbtn').innerHTML = 'Sign In';
+    }
+  }
+
   return (
     <>
-     <Helmet>
+      <Helmet>
         <title>{pagetitle}</title>
       </Helmet>
-    <Header/>
-    <div className="col-sm-5 offset-sm-4 border mt-5 shadow">
-      <h1>Login Here</h1>
-      <hr></hr>
-      <div className=' col-sm-6 offset-sm-3 '>
-       
-        <input 
-        type="email" 
-        value={email} 
-        name="email" 
-        onChange={(e) => {
-           setEmail(e.target.value)
-           clearErrorMessage();
-          }}
-        className="form-control" 
-        placeholder="Enter Your Email" required/>
-         
-        <br/>
-        <input 
-        type="password" 
-        value={password} 
-        name="password" 
-        onChange={(e) => {
-          setPassword(e.target.value)
-          clearErrorMessage();
-          }} 
-          className="form-control" 
-          placeholder="Enter Your Password" 
-          required/>
-            
-          <br/>
-        {errorMessage && <div className="error-message text-danger">{errorMessage}</div>}
-        <button id="signbtn" onClick={signIn} className="btn btn-success mb-3">Sign In</button>
-        {/* <button id="signbtn" type='submit' className="btn btn-success mb-3">Sign In</button> */}
-       
+      <Header />
+      <div className="col-sm-5 offset-sm-4 border mt-5 shadow">
+        <h1>Login Here</h1>
+        <hr />
+        <div className='col-sm-6 offset-sm-3'>
+          <input
+            type="email"
+            value={email}
+            name="email"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              clearErrorMessage();
+            }}
+            className="form-control"
+            placeholder="Enter Your Email"
+            required
+          />
+          <br />
+          <input
+            type="password"
+            value={password}
+            name="password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+              clearErrorMessage();
+            }}
+            className="form-control"
+            placeholder="Enter Your Password"
+            required
+          />
+          <br />
+          {errorMessage && <div className="error-message text-danger">{errorMessage}</div>}
+          <button id="signbtn" onClick={signIn} className="btn btn-success mb-3">Sign In</button>
+        </div>
       </div>
-    </div>
     </>
   );
 }
-export default Login
+
+export default Login;
