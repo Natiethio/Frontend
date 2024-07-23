@@ -17,7 +17,7 @@ function Admin() {
    const [loading, setLoading] = useState(true);
    const [pagetitle, setPagetitle] = useState('');
    const navigate = useNavigate();
-
+   
    useEffect(() => {// calles the function only once when this page landed
       if (!localStorage.getItem('access_token'))//user is logged in so when user try to navigate using a get url typing it redirect it to the /Add url or add page
       {
@@ -265,9 +265,11 @@ function Admin() {
                                  <td><p>{product.License_plate} <span className="text-warning">AA</span></p></td>
                                  <td>
                                     <div className="image-container">
-                                       <img src={`http://192.168.0.8:8000/products/${product.image}`}
+                                       <img src={`http://192.168.234.199:8000/violation/${product.image}`}
                                            alt={product.name} /> 
                                     </div>
+
+                                    
                                  </td>
                                  <td className="d-flex gap-2">
                                     <button id="delbtn" onClick={() => deleteproduct(product.id)} className="btn btn-danger">Delete</button>

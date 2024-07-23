@@ -264,8 +264,9 @@ function UpdateProduct() {
               <br/> */}
 
               {/* <img className="image-update" src={`http://localhost:8000/products/${product.image}`} alt={product.violation_type} /><br /><br /> */}
-              <img className="image-update" src={`http://192.168.0.8:8000/products/${product.image}`}
+              <img className="image-update" src={`http://192.168.234.199:8000/violation/${product.image}`}
                                            alt={product.violation_type} /> <br /><br />
+              
               <button id="updbtn" onClick={handleUpdate} className="btn btn-success mb-3">Update</button>
             </div>
           ))

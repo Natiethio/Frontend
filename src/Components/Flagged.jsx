@@ -247,7 +247,8 @@ function Flagged() {
                                  display: 'flex',
                                  alignItems: 'center',
                                  justifyContent: 'center',
-                                 borderRadius: '4px'
+                                 borderRadius: '4px',
+                                 // cursor:pointer,
                                }}>
                                {product.status === 0 ? 'Not Found' : 'Found'}
                                                         </div>
